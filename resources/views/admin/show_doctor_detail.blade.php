@@ -38,9 +38,11 @@
                 <h2>Certification Details</h2>
                 <table class="table">
                     <thead>
-                        <th>Certification Title:</th>
-                        <th>Organization Name:</th>
-                        <th>Certification Description:</th>
+                        <th>Certification Title</th>
+                        <th>Organization Name</th>
+                        <th>Completion Date</th>
+                        <th>Certification Description   </th>
+                        <th>Certificates to Download</th>
                     </thead>
 
 

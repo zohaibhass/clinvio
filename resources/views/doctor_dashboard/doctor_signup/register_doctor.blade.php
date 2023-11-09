@@ -68,11 +68,16 @@
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <div class="form-floating mb-3 mb-md-0">
-                                        <input class="form-control" required="gender" value="{{ old('gender') }}"
-                                            id="Gender" name="gender" type="text" />
-                                        <label for="gender">Gender</label>
+                                        <select class="form-select" required id="Gender" name="gender">
+                                            <option value="" disabled selected>Select Gender</option>
+                                            <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
+                                            <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
+                                            <option value="other" {{ old('gender') == 'other' ? 'selected' : '' }}>Other</option>
+                                        </select>
+                                        <label for="Gender">Gender</label>
                                     </div>
                                 </div>
+                                
                                 <div class="col-md-6">
                                     <div class="form-floating mb-3 mb-md-0">
                                         <input class="form-control" id="inputage" required="age"
@@ -141,7 +146,7 @@
 
                                         @endforeach
                                     </select>
-                                    <label>Profile Picture</label>
+                                    <label>select a specialization</label>
                                 </div>
                                 </div>
 

@@ -112,7 +112,7 @@
 
                     <div class="form-group">
                         <label for="date">Select Date:</label>
-                        <input type="text" id="date" name="date">
+                        <input autocomplete="off" type="text" id="date" name="date">
 
                         <div id="my_calendar"></div>
 
@@ -131,7 +131,7 @@
 
 
     </div>
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.9.0/dist/sweetalert2.min.css"> 
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
         integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
@@ -140,13 +140,127 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"
         integrity="sha512-AIOTidJAcHBH2G/oZv9viEGXRqDNmfdPVPYOYKGy3fti0xIplnlgMHUGfuNRzC6FkzIo0iIxgFnr9RikFxK+sw=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.9.0/dist/sweetalert2.all.min.js"></script>
     <script>
+        var days = [
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+        ];
+
+        var disabledDays=[0,1,2,3,4,5,6];
+
+        <?php
+            foreach ($availabilityData as $availability):
+        ?>  
+            delete disabledDays[days.indexOf("<?php echo $availability->day ?>")]
+            console.log("dat" , days.indexOf("<?php echo $availability->day ?>"))
+            // disabledDays .splice(days.indexOf("<?php echo $availability->day ?>"),1) 
+        <?php
+            endforeach;
+        ?>
+
+        console.log("av days", disabledDays)
+
+        var reserveDates = {
+            <?php 
+            $i=1;
+            foreach ($availabilityData as $availability):
+
+            ?> "<?= $availability->day ?>": {
+                    "start_time": "<?= $availability->start_time ?>",
+                    "end_time": "<?= $availability->end_time ?>"
+                }
+            <?php 
+            if($i!= count($availabilityData)){
+                echo ",";
+            }
+            endforeach; 
+            $i++;
+            ?>
+
+        };
+
+        console.log("dates", reserveDates)
+
         jQuery('#date').datetimepicker({
+            step:15,
+            disabledWeekDays: disabledDays,
+            onSelectDate: function(curr, input){
+                console.log("fasdfsdf")
+                $('#date').val("")
+            },
             onSelectTime: function(curr_time, $input) {
-                console.log($('#date').datetimepicker('getValue'))
+                let input= $('#date').datetimepicker('getValue')
+                console.log("dateee", input)
+                if(input==null){
+                    return;
+                }
+                let date = new Date(input)
+ 
+                let day = date.getDay();
+
+                let selectedDay = days[day]
+
+                let reserveSelectedDay = reserveDates[selectedDay]
+                console.log("reserveSelectedDay", selectedDay)
+
+                if(reserveSelectedDay!=undefined){
+                    console.log(reserveSelectedDay)
+                    let isAvailable= timeIsBetween(reserveSelectedDay.start_time, reserveSelectedDay.end_time, date)
+                    console.log("ava", isAvailable)
+
+                    if(!isAvailable){
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "warning",
+                            title: "<h5>Doctor is not Available on Time. Select another time.</h5>",
+                            showConfirmButton: false,
+                            timer: 3500    
+                        })
+
+                    }
+                }
+                else{
+                    $("#date").val("")
+                    // alert("Doctor Not Available at this Day...")
+                    Swal.fire({
+                        position: "top-end",
+                        icon: "warning",
+                        title: "<h5>Doctor is not Available on this Date and Time....</h5>",
+                        showConfirmButton: false,
+                        timer: 3500    
+                    })
+                    return false
+                }
             }
         });
+
+
+        function timeIsBetween($date1, $date2, $checkDate){
+            var startTime = $date1;
+            var endTime = $date2;
+            var checkTime= $checkDate; 
+
+            startDate = new Date(checkTime.getTime());
+            startDate.setHours(startTime.split(":")[0]);
+            startDate.setMinutes(startTime.split(":")[1]);
+            startDate.setSeconds(startTime.split(":")[2]);
+
+            endDate = new Date(checkTime.getTime());
+            endDate.setHours(endTime.split(":")[0]);
+            endDate.setMinutes(endTime.split(":")[1]);
+            endDate.setSeconds(endTime.split(":")[2]);
+
+
+            valid = startDate < checkTime && endDate > checkTime
+
+            return valid;
+        }
 
         //     webix.ui({
         //     view:"calendar",

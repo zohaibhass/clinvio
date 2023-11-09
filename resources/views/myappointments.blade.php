@@ -30,7 +30,7 @@
                     <td>{{$appointment->Date}}</td>
                     <td>{{$appointment->Time_start}}</td>
                     <td>{{$appointment->Time_end}}</td>
-                    <td>Approve</td>
+                    <td><span class="badge badge-pill badge-success ">Approve</span></td>
                 </tr>
                 @endforeach
             </tbody>
